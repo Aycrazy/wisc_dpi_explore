@@ -82,6 +82,8 @@ Shapely = "==1.6.4.post2"
 "zope.interface" = "==4.7.1"
 bs4 = "*"
 requests = "*"
+altair = "*"
+bokeh = "*"
 
 [requires]
 python_version = "3.7"
