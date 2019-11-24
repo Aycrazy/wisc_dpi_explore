@@ -308,7 +308,7 @@ riverside_ec2_df = conform2_to_df(riverside_ec2_df, 'Economic Status')
 
 riverside_ec1_df = econ_prepare_type1(riverside_ec1_df)
 
-
+#There are 2 different counts/percentages for 2005 and 2006 --> why?
 riverside_ec_df = econ_join_both_types(riverside_ec1_df,
                                         riverside_ec2_df,
                                         'Riverside High School')
