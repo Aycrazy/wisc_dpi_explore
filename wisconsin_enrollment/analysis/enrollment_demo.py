@@ -323,5 +323,6 @@ riverside_ec_df = get_percents(riverside_ec_df, '', ['econ_disadv','not_econ_dis
 #%%
 
 #For Econ disadv the 585 Not Disadv, 976 Disadv data is represented in wisedash
-riverside_race_ses_df = join_many_cat_dfs(riverside_ec_df.drop([5], axis =0), riverside_rc_df)
+#From df type 2
+riverside_race_ses_df = join_many_cat_dfs(riverside_rc_df.drop([1272],axis=0),riverside_ec_df.drop([4], axis =0))
 # %%
