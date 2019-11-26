@@ -8,6 +8,17 @@ import altair as alt
 import bokeh as bk
 #%%
 
+'''
+To start this script was made to:
+-Select data based on desired data category (i.e. enrollment, attendance,etc), 
+which will reside in the directory <category>_data.  
+-Select rows based on school name(s)
+-Conform data to row-per-school year depending on the original data format
+-Append data in conformed formats
+-Merge with other data of interest
+-Observe trends
+'''
+
 #workstation version
 ENROLLPATH = '/Users/ayaspan/Documents/Personal/wisconsin_enrollment'
 #home version
