@@ -9,9 +9,9 @@ import bokeh as bk
 #%%
 
 #workstation version
-#ENROLLPATH = '/Users/ayaspan/Documents/Personal/wisconsin_enrollment'
+ENROLLPATH = '/Users/ayaspan/Documents/Personal/wisconsin_enrollment'
 #home version
-ENROLLPATH = '/Users/yaz/Documents/wisconsin_schools_enrollment/wisconsin_enrollment/'
+#ENROLLPATH = '/Users/yaz/Documents/wisconsin_schools_enrollment/wisconsin_enrollment/'
 
 
 def collect_enrollments(dir, schools, cat=None):
@@ -318,5 +318,10 @@ riverside_ec_df = econ_join_both_types(riverside_ec1_df,
 riverside_ec_df = get_percents(riverside_ec_df, '', ['econ_disadv','not_econ_disadv'])
 
 #%%
-riverside_race_ses_df = join_many_cat_dfs(riverside_ec_df, riverside_rc_df)
+# riverside_ec_df.drop([5], axis =0)
+
+#%%
+
+#For Econ disadv the 585 Not Disadv, 976 Disadv data is represented in wisedash
+riverside_race_ses_df = join_many_cat_dfs(riverside_ec_df.drop([5], axis =0), riverside_rc_df)
 # %%
