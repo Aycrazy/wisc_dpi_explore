@@ -20,9 +20,9 @@ which will reside in the directory <category>_data.
 '''
 
 #workstation version
-ENROLLPATH = '/Users/ayaspan/Documents/Personal/wisconsin_enrollment'
+#ENROLLPATH = '/Users/ayaspan/Documents/Personal/wisconsin_enrollment'
 #home version
-#ENROLLPATH = '/Users/yaz/Documents/wisconsin_schools_enrollment/wisconsin_enrollment/'
+ENROLLPATH = '/Users/yaz/Documents/wisconsin_schools_enrollment/wisconsin_enrollment/'
 
 
 def collect_enrollments(dir, schools, cat=None):
@@ -171,126 +171,49 @@ def join_many_cat_dfs(cat1_df, cat2_df):
 
     return cat1_and_2_df
 
-#%%
+wash = ['Washington Hi', 'WHS Information Technology']
 
-print(os.path)
-
-wash1_df, wash2_df = collect_enrollments(ENROLLPATH+'/enrollment_data', ['Washington Hi','WHS Information Technology'], 'race')
-
-#%%
-
-#To get needed cols from type2
-#wash2_conf_df = wash2_df[wash2_df['group_by'].isin(['Race/Ethnicity','All Students'])][['school_year','group_by_value','student_count']].pivot(index='school_year', columns='group_by_value', values='student_count')
-
-wash2_conf_df = conform2_to_df(wash2_df,'Race/Ethnicity')
-
-# rep_cols2 = {c:c.lower().replace(' ','_') for c in wash2_conf_df.columns}
-
-# rep_cols2['All Students'] = 'total_enrollment'
-
-# wash2_conf_df.rename(columns=rep_cols2, inplace=True)
-
-# wash2_conf_df.reset_index(inplace=True)
-
-# wash2_conf_df['school_year'] = wash2_conf_df.school_year.apply(lambda x: re.search(r'\d+',x).group(0))
-
-
-# wash2_conf_df.columns
-
-# #%%
-
-# wash1_conf_df = wash1_df[['year','school_name', 'black_count', 'amer_indian_count', 'asian_count','hisp_count','pac_isle_count','white_count','two_or_more_count','total_enrollment_prek-12' ]]
-
-# # %%
-# #wash1_df.iloc[10:,]
-# # %%
-# rep_cols = {c:re.search(r'[a-z]+',c).group(0) for c in wash1_conf_df.columns if c not in ['school_name']}
-
-# rep_cols['amer_indian_count'] = 'amer_indian'
-# rep_cols['pac_isle_count'] = 'pacific_islander'
-# rep_cols['two_or_more_count'] = 'two_or_more'
-# rep_cols['hisp_count'] = 'hispanic'
-# rep_cols['year'] = 'school_year'
-
-# rep_cols['total_enrollment_prek-12'] = 'total_enrollment'
-
-# wash1_conf_df.rename(columns=rep_cols, inplace=True)
-
-# wash1_conf_df.columns
+wash_rc1_df, wash_rc2_df = collect_enrollments(ENROLLPATH+'/enrollment_data', wash, 'race')
 
 # %%
 
-# wash_df = wash1_conf_df.append(wash2_conf_df)
-
-# wash_df.school_year = wash_df.school_year.astype(int)
-
-# wash_df['school_name'] = 'Washington High School'
-
-# # %%
-
-# wash_df = wash_df[['amer_indian', 'asian', 'black', 'hispanic', 'pacific_islander','two_or_more', 'white','school_year']].fillna(0).astype(int)
-
-# wash_df['total_calc'] = wash_df[['amer_indian', 'asian', 'black', 'hispanic', 'pacific_islander','two_or_more', 'white']].apply(sum,axis=1)
+wash_rc2_df = conform2_to_df(wash_rc2_df, 'Race/Ethnicity')
 
 # %%
 
-#ECONOMIC STATUS
+wash_rc1_df = race_prepare_type1_df(wash_rc1_df)
 
-wash1_df, wash2_df = collect_enrollments(ENROLLPATH+'/enrollment_data', ['Washington Hi','WHS Information Technology'], 'economic')
+# %%
 
-# #%%
+wash_rc_df = race_join_both_types(wash_rc1_df, wash_rc2_df, 'Washington High School')
 
-# wash2_ses_conf_df = conform_to_df('Economic Status', wash2_df)
+wash_rc_df = get_percents(wash_rc_df, '')
 
+# %%
 
+wash_ec1_df, wash_ec2_df = collect_enrollments(ENROLLPATH+'/enrollment_data', wash, 'economic')
 
-# econ2_cols = {c:c.lower().replace(' ','_') for c in wash2_conf_df.columns}
+wash_ec2_df = conform2_to_df(wash_ec2_df, 'Economic Status')
 
-# wash2_ses_conf_df.rename(columns =econ2_cols, inplace=True)
+wash_ec1_df = econ_prepare_type1(wash_ec1_df)
 
-# wash2_ses_conf_df.reset_index(inplace=True)
+#There are 2 different counts/percentages for 2005 and 2006 --> why?
+wash_ec_df = econ_join_both_types(wash_ec1_df,
+                                        wash_ec2_df,
+                                        'Washington High School')
 
-# wash2_ses_conf_df['school_year'] = wash2_conf_df.school_year.apply(lambda x: re.search(r'\d+',x).group(0))
+#riverside_ec_df['total_calc'] = riverside_ec_df[['econ_disadv','not_econ_disadv']].apply(sum,axis=1)
 
+wash_ec_df = get_percents(wash_ec_df, '', ['econ_disadv','not_econ_disadv'])
 
+#%%
+# riverside_ec_df.drop([5], axis =0)
 
 #%%
 
-# wash1_select_df = wash1_df[wash1_df.columns[10:].to_list()+['year']]
-
-# econ1_cols = {c:c.replace('_count','') for c in wash1_select_df.columns if c not in ['school_name']}
-
-# #econ1_cols={}
-# econ1_cols['not_econd_disadv_count'] = 'not_econ_disadv'
-# econ1_cols['total_enrollment_prek-12'] = 'all_students'
-# econ1_cols['year'] = 'school_year'
-
-
-
-# wash1_select_df.rename(columns = econ1_cols, inplace=True)
-
-#%%
-
-# wash_ses_df = wash1_select_df.append(wash2_ses_conf_df)
-# wash_ses_df['school_name'] = 'Washington High School'
-# wash_ses_df.school_year = wash_ses_df.school_year.astype(int)
-# wash_ses_df.reset_index(inplace=True)
-
-# wash_ses_df = wash_ses_df[['econ_disadv','not_econ_disadv','all_students','school_year']].fillna(0).astype(int)
-
-# wash_ses_df['econ_disadv_percent'] = (wash_ses_df.econ_disadv.astype(int)/wash_ses_df.all_students) *100
-
-
-# wash_ses_df['not_econ_disadv_percent'] = (wash_ses_df.not_econ_disadv.astype(int)//wash_ses_df.all_students) *100
-
-
-# wash_race_ses_df = pd.merge(wash_df, wash_ses_df, how='left',on='school_year')
-
-# wash_race_ses_df['white_percent'] = wash_race_ses_df['white']/ wash_race_ses_df['total_calc']
-
-# wash_race_ses_df['black_percent'] = wash_race_ses_df['black']/ wash_race_ses_df['total_calc']
-
-
+#For Econ disadv the 585 Not Disadv, 976 Disadv data is represented in wisedash
+#From df type 2
+wash_race_ses_df = join_many_cat_dfs(wash_rc_df,wash_ec_df)
 
 # %%
 riverside = ['Riverside High', 'Riverside Hi']
