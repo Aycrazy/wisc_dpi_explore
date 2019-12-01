@@ -40,6 +40,7 @@ def collect_enrollments(dir, schools, cat=None):
         if year1 in years_type1:
             if cat:
                 if cat in f:
+                    print(f,' filename')
                     type1_df = type1_df.append(pd.read_csv("{0}/{1}".format(dir,f)))
         else:
             type2_df =type2_df.append(pd.read_csv("{0}/{1}".format(dir,f)))
@@ -52,7 +53,7 @@ def collect_enrollments(dir, schools, cat=None):
 
     type2_df.rename(columns={ c:c.lower() for c in type2_df.columns}, inplace=True)
     
-    print(type2_df.columns)
+    #print(type2_df.columns)
 
     type2_ss_df = type2_df[type2_df['school_name'].isin(schools)]
 
@@ -61,11 +62,17 @@ def collect_enrollments(dir, schools, cat=None):
 
 def conform2_to_df(df_type2,_filter_by):
     ''' 
-        _fitler_by: category of interest
+        _fitler_by: category of interest as a string or list
         df : datset type 2
     '''
-    conf_df = df_type2[df_type2['group_by'].isin([_filter_by,'All Students'])]\
-        [['school_year','group_by_value','student_count']].pivot(index='school_year', columns='group_by_value', values='student_count')
+
+    if isinstance(_filter_by,str):
+        conf_df = df_type2[df_type2['group_by'].isin([_filter_by,'All Students'])]\
+            [['school_year','group_by_value','student_count']].pivot(index='school_year', columns='group_by_value', values='student_count')
+    else:
+        _filter_by.append('All Students')
+        conf_df = df_type2[df_type2['group_by'].isin(_filter_by)]\
+            [['school_year','group_by_value','student_count']].pivot(index='school_year', columns='group_by_value', values='student_count')
 
     rep_cols2 = {c:c.lower().replace(' ','_') for c in conf_df.columns}
 
@@ -171,6 +178,7 @@ def join_many_cat_dfs(cat1_df, cat2_df):
 
     return cat1_and_2_df
 
+#%%
 wash = ['Washington Hi', 'WHS Information Technology']
 
 wash_rc1_df, wash_rc2_df = collect_enrollments(ENROLLPATH+'/enrollment_data', wash, 'race')
@@ -260,3 +268,22 @@ riverside_ec_df = get_percents(riverside_ec_df, '', ['econ_disadv','not_econ_dis
 #From df type 2
 riverside_race_ses_df = join_many_cat_dfs(riverside_rc_df.drop([1272],axis=0),riverside_ec_df.drop([4], axis =0))
 # %%
+
+#LOAD IN ATTENDANCE DATA FILES
+#MAYBE SPLIT FILES BY MEASURE CATEGORY
+    #COULD MAKE CLASSES?
+
+#LOAD IN DATA
+
+wash_ac1_df, wash_ac2_df = collect_enrollments(ENROLLPATH+'/attendance_data', wash, 'attendance')
+
+#%%
+#Race/Ethnicity and Economic Stauts?
+#Need to adapt the functiont to handle multiple categories
+wash_ac2_df = conform2_to_df(wash_ac2_df,['Race/Ethnicity','Economic Status'])
+
+#Need a bunch of functions just for attendance
+
+# %%
+
+wash_ac1_df = 
