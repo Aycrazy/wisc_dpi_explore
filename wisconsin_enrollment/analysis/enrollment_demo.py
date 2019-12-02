@@ -179,6 +179,34 @@ def join_many_cat_dfs(cat1_df, cat2_df):
     return cat1_and_2_df
 
 #%%
+def attend_prepare_type1(df_type1):
+
+    #_filter_by.append('All Students')
+    df_type1 = df_type1[(df_type1['race_ethnicity'].isin(['All Groups Combined'])) &\
+         (df_type1['economic_status'].isin(['Both Groups Combined'])) &\
+          (df_type1['gender'].isin(['Both Groups Combined']))]\
+            [['year','economic_status','race_ethnicity',\
+                'actual_days_of_attendance','possible_days_of_attendance']].pivot(index='year',
+                 columns='economic_status', values=['actual_days_of_attendance','possible_days_of_attendance'])
+
+    #attend1_cols = {c:c.replace('_count','') for c in df_type1.columns if c not in ['school_name']}
+
+    #econ1_cols={}
+    # attend1_cols['amer_indian_count'] = 'amer_indian'
+    # attend1_cols['pac_isle_count'] = 'pacific_islander'
+    # attend1_cols['two_or_more_count'] = 'two_or_more'
+    # attend1_cols['hisp_count'] = 'hispanic'
+    # attend1_cols['year'] = 'school_year'
+    # attend1_cols['not_econd_disadv_count'] = 'not_econ_disadv'
+    # attend1_cols['total_enrollment_prek-12'] = 'all_students'
+    attend1_cols['year'] = 'school_year'
+
+
+    #df_type1.rename(columns = attend1_cols, inplace=True)
+
+    return df_type1
+
+#%%
 wash = ['Washington Hi', 'WHS Information Technology']
 
 wash_rc1_df, wash_rc2_df = collect_enrollments(ENROLLPATH+'/enrollment_data', wash, 'race')
@@ -286,4 +314,15 @@ wash_ac2_df = conform2_to_df(wash_ac2_df,['Race/Ethnicity','Economic Status'])
 
 # %%
 
-wash_ac1_df = 
+wash_ac1_df = attend_prepare_type1(wash_ac1_df)
+
+# %%
+ wash_ac1_df[(wash_ac1_df['race_ethnicity'].isin(['All Groups Combined'])) &\
+          (wash_ac1_df['economic_status'].isin(['Both Groups Combined']))&\
+          ( wash_ac1_df['gender'].isin(['Both Groups Combined'])) &\
+           ( wash_ac1_df['grade'].isin(['Grades PreK-12'])) &\
+            ( wash_ac1_df['english_proficiency_status'].isin(['Both Groups Combined'])) &\
+             ( wash_ac1_df['disability_status'].isin(['Both Groups Combined']))   ]# %%
+
+
+# %%
