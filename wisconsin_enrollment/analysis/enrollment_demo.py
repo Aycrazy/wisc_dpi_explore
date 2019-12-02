@@ -20,9 +20,9 @@ which will reside in the directory <category>_data.
 '''
 
 #workstation version
-#ENROLLPATH = '/Users/ayaspan/Documents/Personal/wisconsin_enrollment'
+ENROLLPATH = '/Users/ayaspan/Documents/Personal/wisconsin_enrollment'
 #home version
-ENROLLPATH = '/Users/yaz/Documents/wisconsin_schools_enrollment/wisconsin_enrollment/'
+#ENROLLPATH = '/Users/yaz/Documents/wisconsin_schools_enrollment/wisconsin_enrollment/'
 
 
 def collect_enrollments(dir, schools, cat=None):
@@ -179,19 +179,30 @@ def join_many_cat_dfs(cat1_df, cat2_df):
     return cat1_and_2_df
 
 #%%
-def attend_prepare_type1(df_type1):
+
+def dict_to_query(_dict):
+
+    return ' and '.join(['{0} == "{1}"'.format(k,v) for k,v in _dict.items()])
+
+def attend_prepare_type1(df_type1, cat_dict):
 
     #_filter_by.append('All Students')
-    df_type1 = df_type1[(df_type1['race_ethnicity'].isin(['All Groups Combined'])) &\
-         (df_type1['economic_status'].isin(['Both Groups Combined'])) &\
-          (df_type1['gender'].isin(['Both Groups Combined']))]\
-            [['year','economic_status','race_ethnicity',\
-                'actual_days_of_attendance','possible_days_of_attendance']].pivot(index='year',
-                 columns='economic_status', values=['actual_days_of_attendance','possible_days_of_attendance'])
+
+    filter  = dict_to_query(cat_dict)
+
+    print(filter)
+
+    df_type1 = df_type1.query(filter)
+    # df_type1 = df_type1[(df_type1['race_ethnicity'].isin(['All Groups Combined'])) &\
+    #      (df_type1['economic_status'].isin(['Both Groups Combined'])) &\
+    #       (df_type1['gender'].isin(['Both Groups Combined']))]\
+    #         [['year','economic_status','race_ethnicity',\
+    #             'actual_days_of_attendance','possible_days_of_attendance']].pivot(index='year',
+    #              columns='economic_status', values=['actual_days_of_attendance','possible_days_of_attendance'])
 
     #attend1_cols = {c:c.replace('_count','') for c in df_type1.columns if c not in ['school_name']}
 
-    #econ1_cols={}
+    attend1_cols={}
     # attend1_cols['amer_indian_count'] = 'amer_indian'
     # attend1_cols['pac_isle_count'] = 'pacific_islander'
     # attend1_cols['two_or_more_count'] = 'two_or_more'
@@ -202,7 +213,7 @@ def attend_prepare_type1(df_type1):
     attend1_cols['year'] = 'school_year'
 
 
-    #df_type1.rename(columns = attend1_cols, inplace=True)
+    df_type1.rename(columns = attend1_cols, inplace=True)
 
     return df_type1
 
@@ -303,6 +314,8 @@ riverside_race_ses_df = join_many_cat_dfs(riverside_rc_df.drop([1272],axis=0),ri
 
 #LOAD IN DATA
 
+wash = ['Washington Hi', 'WHS Information Technology']
+
 wash_ac1_df, wash_ac2_df = collect_enrollments(ENROLLPATH+'/attendance_data', wash, 'attendance')
 
 #%%
@@ -314,15 +327,24 @@ wash_ac2_df = conform2_to_df(wash_ac2_df,['Race/Ethnicity','Economic Status'])
 
 # %%
 
-wash_ac1_df = attend_prepare_type1(wash_ac1_df)
+ac_dict = {'race_ethnicity':'All Groups Combined',
+            'economic_status': 'Both Groups Combined',
+            'gender':'Both Groups Combined',
+            'grade':'Grades PreK-12',
+            'english_proficiency_status':'Both Groups Combined',
+            'disability_status': 'Both Groups Combined'}
+
+wash_ac1_df = attend_prepare_type1(wash_ac1_df, ac_dict)
 
 # %%
- wash_ac1_df[(wash_ac1_df['race_ethnicity'].isin(['All Groups Combined'])) &\
-          (wash_ac1_df['economic_status'].isin(['Both Groups Combined']))&\
-          ( wash_ac1_df['gender'].isin(['Both Groups Combined'])) &\
-           ( wash_ac1_df['grade'].isin(['Grades PreK-12'])) &\
-            ( wash_ac1_df['english_proficiency_status'].isin(['Both Groups Combined'])) &\
-             ( wash_ac1_df['disability_status'].isin(['Both Groups Combined']))   ]# %%
+
+
+#  wash_ac1_df[(wash_ac1_df['race_ethnicity'].isin(['All Groups Combined'])) &\
+#           (wash_ac1_df['economic_status'].isin(['Both Groups Combined']))&\
+#           ( wash_ac1_df['gender'].isin(['Both Groups Combined'])) &\
+#            ( wash_ac1_df['grade'].isin(['Grades PreK-12'])) &\
+#             ( wash_ac1_df['english_proficiency_status'].isin(['Both Groups Combined'])) &\
+#              ( wash_ac1_df['disability_status'].isin(['Both Groups Combined']))   ]# %%
 
 
 # %%
